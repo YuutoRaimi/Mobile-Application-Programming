@@ -1,0 +1,13 @@
+1. Code yang menangani pembuatan path file dan URI tersebut terdapat di dalam file ProviderFileManager.kt, khususnya pada fungsi generatePhotoUri. Fungsi ini menentukan lokasi file fisik menggunakan getExternalFilesDir (berdasarkan path yang dikonfigurasi) dan kemudian membuat URI menggunakan FileHelper.
+
+2.
+- URI (Attribute 1): URI ini pada Content URI yang dihasilkan oleh FileProvider. Ini adalah akses sementara dan aman yang diberikan kepada aplikasi kamera (aplikasi eksternal) agar dapat menyimpan hasil foto ke dalam penyimpanan internal aplikasi Anda tanpa mengekspos path file aslinya secara langsung.
+- relativePath (Attribute 4): Atribut ini merujuk pada nama folder kategori standar di mana file tersebut seharusnya berada (misalnya Environment.DIRECTORY_PICTURES atau Environment.DIRECTORY_MOVIES). Nilai ini digunakan nantinya saat memasukkan data ke MediaStore untuk memberi tahu sistem di folder mana gambar/video tersebut dikelompokkan secara logis.
+
+3.
+- Generate URI & File: Saat tombol ditekan, fungsi openImageCapture() memanggil generatePhotoUri(). Aplikasi membuat objek File kosong di penyimpanan aplikasi dan menghasilkan URI FileProvider untuk file tersebut.
+- Launch Camera: Aplikasi meluncurkan kamera eksternal menggunakan takePictureLauncher.launch(uri) dengan membawa URI yang baru dibuat.
+- Capture & Save: Pengguna mengambil foto. Aplikasi kamera menyimpan data foto ke lokasi URI yang diberikan tadi.
+- Return Result: Setelah foto diambil, kamera menutup dan memberikan callback sukses ke takePictureLauncher di MainActivity .
+- Insert to MediaStore: Di dalam callback, fungsi providerFileManager.insertImageToStore() dipanggil.
+- Copy Data: Fungsi insertToStore membaca file foto dari penyimpanan aplikasi (melalui InputStream) dan menyalin isinya ke entri baru di MediaStore (melalui OutputStream), sehingga foto tersebut kini tersedia di galeri publik perangkat .
